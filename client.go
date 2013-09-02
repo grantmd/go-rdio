@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	RDIO_API_ENDPOINT   = "https://api.rdio.com/1"
-	RDIO_OAUTH_ENDPOINT = "https://api.rdio.com/oauth"
+	RDIO_API_ENDPOINT   = "http://api.rdio.com/1"
+	RDIO_OAUTH_ENDPOINT = "http://api.rdio.com/oauth"
 )
 
 type Client struct {
