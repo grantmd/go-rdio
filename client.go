@@ -1,6 +1,9 @@
 package rdio
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,6 +13,7 @@ import (
 	"net/url"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -86,14 +90,14 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 	params["oauth_signature_method"] = []string{"HMAC-SHA1"}
 	params["oauth_consumer_key"] = []string{c.ConsumerKey}
 
-	// the consumer secret is the first half of the HMAC-SHA1 key
-	hmac_key := c.ConsumerSecret + "&"
+	// The consumer secret is the first half of the HMAC-SHA1 key
+	hmacKey := c.ConsumerSecret + "&"
 
 	if c.Token != "" {
-		// include a token in params
+		// Include a token in params
 		params["oauth_token"] = []string{c.Token}
 		// and the token secret in the HMAC-SHA1 key
-		hmac_key += c.TokenSecret
+		hmacKey += c.TokenSecret
 	}
 
 	// sort the params by key
@@ -108,13 +112,34 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 		sorted.Add(k, params.Get(k))
 	}
 
-	// build the signature base string
-	signatureBaseString := "POST&" + url.QueryEscape(signUrl) + "&" + sorted.Encode()
-	fmt.Println(signatureBaseString)
+	// Build the signature base string
+	signatureBaseString := []byte("POST&" + url.QueryEscape(signUrl) + "&" + sorted.Encode())
 
 	// Calculate HMAC-SHA1
+	mac := hmac.New(sha1.New, []byte(hmacKey))
+	mac.Write(signatureBaseString)
+	oauthSignature := base64.URLEncoding.EncodeToString(mac.Sum(nil))
 
-	return "OAuth "
+	// Build the Authorization header
+	authorizationParams := url.Values{}
+	authorizationParams.Add("oauth_signature", oauthSignature)
+
+	// List of params that must be included in the header, if present
+	for _, k := range keys {
+		switch k {
+		case "oauth_version",
+			"oauth_timestamp",
+			"oauth_nonce",
+			"oauth_signature_method",
+			"oauth_signature",
+			"oauth_consumer_key",
+			"oauth_token":
+
+			authorizationParams.Add(k, params.Get(k))
+		}
+	}
+
+	return "OAuth " + strings.Replace(authorizationParams.Encode(), "&", ", ", -1)
 }
 
 func (c *Client) StartAuth() ([]byte, error) {
