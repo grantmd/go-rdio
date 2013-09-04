@@ -48,22 +48,27 @@ func (c *Client) Call(method string, params url.Values) (interface{}, error) {
 }
 
 func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
-	// Sign the params
-	auth := c.Sign(postUrl, params)
-	fmt.Println(auth)
 
-	// Make call
+	// Build HTTP client
 	if c.httpClient == nil {
 		c.httpClient = &http.Client{}
 	}
 
-	req, err := http.NewRequest("POST", postUrl, strings.NewReader(params.Encode()))
+	postBody := params.Encode()
+	req, err := http.NewRequest("POST", postUrl, strings.NewReader(postBody))
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Content-type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", auth)
+	req.Header.Set("Content-type", "application/x-www-form-urlencoded")
+
+	// Sign the params
+	auth := c.Sign(postUrl, params)
+	fmt.Println("Auth:")
+	fmt.Println(auth)
+	fmt.Println()
+
+	req.Header.Set("Authorization", auth)
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -78,9 +83,10 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Println(resp.Header)
 	str := string(body)
+	fmt.Println("Response body:")
 	fmt.Println(str)
+	fmt.Println()
 
 	// Check status code
 	switch resp.StatusCode {
@@ -88,6 +94,8 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 		return nil, fmt.Errorf("Unknown status code: %d", resp.StatusCode)
 	case 400:
 		return nil, errors.New("Bad Request")
+	case 401:
+		return nil, errors.New("Invalid Signature")
 	case 403:
 		return nil, errors.New("Developer Inactive")
 	case 200:
