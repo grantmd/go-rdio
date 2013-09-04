@@ -19,7 +19,7 @@ import (
 
 const (
 	RDIO_API_ENDPOINT   = "http://api.rdio.com/1/"
-	RDIO_OAUTH_ENDPOINT = "http://api.rdio.com/oauth"
+	RDIO_OAUTH_ENDPOINT = "http://api.rdio.com/oauth/"
 )
 
 type Client struct {
@@ -27,6 +27,7 @@ type Client struct {
 	ConsumerSecret string
 	Token          string
 	TokenSecret    string
+	httpClient     *http.Client
 }
 
 func (c *Client) Call(method string, params url.Values) (interface{}, error) {
@@ -52,7 +53,18 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 	fmt.Println(auth)
 
 	// Make call
-	resp, err := http.PostForm(postUrl, params)
+	if c.httpClient == nil {
+		c.httpClient = &http.Client{}
+	}
+
+	req, err := http.NewRequest("POST", postUrl, strings.NewReader(params.Encode()))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-type", "application/x-www-form-urlencoded")
+	req.Header.Add("Authorization", auth)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -66,11 +78,14 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 		return nil, err
 	}
 
+	fmt.Println(resp.Header)
+	str := string(body)
+	fmt.Println(str)
+
 	// Check status code
 	switch resp.StatusCode {
 	default:
-		str := string(body)
-		return nil, fmt.Errorf("Unknown status code: %d, %s", resp.StatusCode, str)
+		return nil, fmt.Errorf("Unknown status code: %d", resp.StatusCode)
 	case 400:
 		return nil, errors.New("Bad Request")
 	case 403:
@@ -122,7 +137,7 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 
 	// Build the Authorization header
 	authorizationParams := url.Values{}
-	authorizationParams.Add("oauth_signature", oauthSignature)
+	authorizationParams.Add("oauth_signature", `"`+oauthSignature+`"`)
 
 	// List of params that must be included in the header, if present
 	for _, k := range keys {
@@ -135,11 +150,11 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 			"oauth_consumer_key",
 			"oauth_token":
 
-			authorizationParams.Add(k, params.Get(k))
+			authorizationParams.Add(k, `"`+params.Get(k)+`"`)
 		}
 	}
 
-	return "OAuth " + strings.Replace(authorizationParams.Encode(), "&", ", ", -1)
+	return "OAuth " + strings.Replace(strings.Replace(authorizationParams.Encode(), "&", ", ", -1), "%22", `"`, -1)
 }
 
 func (c *Client) StartAuth() ([]byte, error) {
@@ -147,7 +162,7 @@ func (c *Client) StartAuth() ([]byte, error) {
 		"oauth_callback": []string{"oob"},
 	}
 
-	body, err := c.SignedPost("http://api.rdio.com/oauth/request_token", params)
+	body, err := c.SignedPost(RDIO_OAUTH_ENDPOINT+"request_token/", params)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +175,7 @@ func (c *Client) CompleteAuth(verifier string) ([]byte, error) {
 		"oauth_verifier": []string{"verifier"},
 	}
 
-	body, err := c.SignedPost("http://api.rdio.com/oauth/access_token", params)
+	body, err := c.SignedPost(RDIO_OAUTH_ENDPOINT+"access_token/", params)
 	if err != nil {
 		return nil, err
 	}

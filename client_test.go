@@ -20,7 +20,7 @@ func TestStartAuth(t *testing.T) {
 	fmt.Println(body)
 }
 
-func TestCompleteAuth(t *testing.T) {
+/*func TestCompleteAuth(t *testing.T) {
 	c := &Client{
 		ConsumerKey:    "c9jx7x67bkmqm6ygnjwmbubd",
 		ConsumerSecret: "s53DhwNxuq",
@@ -47,4 +47,4 @@ func TestClient(t *testing.T) {
 	}
 
 	fmt.Println(body)
-}
+}*/
