@@ -137,7 +137,7 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 
 	// Build the Authorization header
 	authorizationParams := url.Values{}
-	authorizationParams.Add("oauth_signature", `"`+oauthSignature+`"`)
+	//authorizationParams.Add("oauth_signature", `"`+oauthSignature+`"`)
 
 	// List of params that must be included in the header, if present
 	for _, k := range keys {
@@ -146,7 +146,7 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 			"oauth_timestamp",
 			"oauth_nonce",
 			"oauth_signature_method",
-			"oauth_signature",
+			//"oauth_signature",
 			"oauth_consumer_key",
 			"oauth_token":
 
@@ -154,7 +154,7 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 		}
 	}
 
-	return "OAuth " + strings.Replace(strings.Replace(authorizationParams.Encode(), "&", ", ", -1), "%22", `"`, -1)
+	return "OAuth oauth_signature=\"" + oauthSignature + "\", " + strings.Replace(strings.Replace(authorizationParams.Encode(), "&", ", ", -1), "%22", `"`, -1)
 }
 
 func (c *Client) StartAuth() ([]byte, error) {
