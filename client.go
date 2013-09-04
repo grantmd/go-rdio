@@ -99,6 +99,7 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 }
 
 func (c *Client) Sign(signUrl string, params url.Values) string {
+	rand.Seed(time.Now().UnixNano())
 	params["oauth_version"] = []string{"1.0"}
 	params["oauth_timestamp"] = []string{strconv.FormatInt(time.Now().Unix(), 10)}
 	params["oauth_nonce"] = []string{strconv.FormatInt(rand.Int63n(1000000), 10)}
@@ -128,16 +129,18 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 	}
 
 	// Build the signature base string
-	signatureBaseString := []byte("POST&" + url.QueryEscape(signUrl) + "&" + sorted.Encode())
+	signatureBaseString := []byte("POST&" + url.QueryEscape(signUrl) + "&" + url.QueryEscape(sorted.Encode()))
+	//fmt.Println(string(signatureBaseString))
 
 	// Calculate HMAC-SHA1
 	mac := hmac.New(sha1.New, []byte(hmacKey))
 	mac.Write(signatureBaseString)
 	oauthSignature := base64.URLEncoding.EncodeToString(mac.Sum(nil))
+	//fmt.Println(oauthSignature)
 
 	// Build the Authorization header
 	authorizationParams := url.Values{}
-	//authorizationParams.Add("oauth_signature", `"`+oauthSignature+`"`)
+	authorizationParams.Add("oauth_signature", `"`+oauthSignature+`"`)
 
 	// List of params that must be included in the header, if present
 	for _, k := range keys {
@@ -146,7 +149,7 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 			"oauth_timestamp",
 			"oauth_nonce",
 			"oauth_signature_method",
-			//"oauth_signature",
+			"oauth_signature",
 			"oauth_consumer_key",
 			"oauth_token":
 
@@ -154,7 +157,7 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 		}
 	}
 
-	return "OAuth oauth_signature=\"" + oauthSignature + "\", " + strings.Replace(strings.Replace(authorizationParams.Encode(), "&", ", ", -1), "%22", `"`, -1)
+	return "OAuth " + strings.Replace(strings.Replace(authorizationParams.Encode(), "&", ", ", -1), "%22", `"`, -1)
 }
 
 func (c *Client) StartAuth() ([]byte, error) {
@@ -162,7 +165,7 @@ func (c *Client) StartAuth() ([]byte, error) {
 		"oauth_callback": []string{"oob"},
 	}
 
-	body, err := c.SignedPost(RDIO_OAUTH_ENDPOINT+"request_token/", params)
+	body, err := c.SignedPost(RDIO_OAUTH_ENDPOINT+"request_token", params)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +178,7 @@ func (c *Client) CompleteAuth(verifier string) ([]byte, error) {
 		"oauth_verifier": []string{"verifier"},
 	}
 
-	body, err := c.SignedPost(RDIO_OAUTH_ENDPOINT+"access_token/", params)
+	body, err := c.SignedPost(RDIO_OAUTH_ENDPOINT+"access_token", params)
 	if err != nil {
 		return nil, err
 	}
