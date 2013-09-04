@@ -101,7 +101,7 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 func (c *Client) Sign(signUrl string, params url.Values) string {
 	params["oauth_version"] = []string{"1.0"}
 	params["oauth_timestamp"] = []string{strconv.FormatInt(time.Now().Unix(), 10)}
-	params["oauth_nonce"] = []string{strconv.FormatInt(rand.Int63(), 10)}
+	params["oauth_nonce"] = []string{strconv.FormatInt(rand.Int63n(1000000), 10)}
 	params["oauth_signature_method"] = []string{"HMAC-SHA1"}
 	params["oauth_consumer_key"] = []string{c.ConsumerKey}
 
