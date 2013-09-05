@@ -86,11 +86,11 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 	default:
 		return nil, fmt.Errorf("Unknown status code: %d", resp.StatusCode)
 	case 400:
-		return nil, errors.New("Bad Request")
+		return nil, errors.New("400: Bad Request")
 	case 401:
-		return nil, errors.New("Invalid Signature")
+		return nil, errors.New("401: Invalid Signature")
 	case 403:
-		return nil, errors.New("Developer Inactive")
+		return nil, errors.New("403: Developer Inactive")
 	case 200:
 
 	}
@@ -177,13 +177,17 @@ func (c *Client) StartAuth() (url.Values, error) {
 		return nil, err
 	}
 
+	// Store the tokens for later
+	c.Token = m.Get("oauth_token")
+	c.TokenSecret = m.Get("oauth_token_secret")
+
 	return m, nil
 }
 
 func (c *Client) CompleteAuth(verifier string) (url.Values, error) {
 	// Request exchange for access token
 	params := url.Values{
-		"oauth_verifier": []string{"verifier"},
+		"oauth_verifier": []string{verifier},
 	}
 
 	body, err := c.SignedPost(RDIO_OAUTH_ENDPOINT+"access_token", params)
@@ -196,6 +200,10 @@ func (c *Client) CompleteAuth(verifier string) (url.Values, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Store the tokens for later
+	c.Token = m.Get("oauth_token")
+	c.TokenSecret = m.Get("oauth_token_secret")
 
 	return m, nil
 }
