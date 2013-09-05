@@ -3,6 +3,8 @@ package main
 type ClientConfig struct {
 	ConsumerKey    string
 	ConsumerSecret string
+	Token          string
+	TokenSecret    string
 }
 
 var (
