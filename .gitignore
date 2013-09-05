@@ -1,3 +1,2 @@
-examples/config.go
-examples/examples
-examples/config
+example/example_config.go
+example/example
