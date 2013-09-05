@@ -1,0 +1,13 @@
+package main
+
+type ClientConfig struct {
+	ConsumerKey    string
+	ConsumerSecret string
+}
+
+var (
+	config = ClientConfig{
+		ConsumerKey:    "your_key",
+		ConsumerSecret: "your_secret",
+	}
+)

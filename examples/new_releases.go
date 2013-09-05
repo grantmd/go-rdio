@@ -11,8 +11,8 @@ import (
 func main() {
 	// Build a client object with our keys
 	c := &rdio.Client{
-		ConsumerKey:    "your_key",
-		ConsumerSecret: "your_secret",
+		ConsumerKey:    config.ConsumerKey,
+		ConsumerSecret: config.ConsumerSecret,
 	}
 
 	// Start auth in order to redirect the user to approve our app
