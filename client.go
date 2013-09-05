@@ -32,7 +32,7 @@ type Client struct {
 }
 
 // Call an API method with auth
-func (c *Client) Call(method string, params url.Values) (map[string]interface{}, error) {
+func (c *Client) Call(method string, params url.Values) (interface{}, error) {
 	params["method"] = []string{method}
 	body, err := c.SignedPost(RDIO_API_ENDPOINT, params)
 	if err != nil {
@@ -55,7 +55,7 @@ func (c *Client) Call(method string, params url.Values) (map[string]interface{},
 		return m, errors.New("API response not 'ok'")
 	}
 
-	return m, nil
+	return m["result"], nil
 }
 
 // Sign a request with OAuth and send it to Rdio
