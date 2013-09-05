@@ -29,8 +29,8 @@ Usage
         // Redirect the user to Rdio and get their verifier
         // ...
         auth, err = c.CompleteAuth(string(verifier))
-        params := make(map[string][]string)
-        body, err := c.Call("getNewReleases", params)
+        albums, err := c.GetNewReleases()
+        fmt.Println(albums)
 
 Examples
 --------
