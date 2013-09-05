@@ -47,11 +47,10 @@ func main() {
 	}
 
 	// Make our first call
-	params := make(map[string][]string)
-	body, err := c.Call("getNewReleases", params)
+	albums, err := c.GetNewReleases()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(body)
+	fmt.Println(albums)
 }
