@@ -64,9 +64,7 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 
 	// Sign the params
 	auth := c.Sign(postUrl, params)
-	fmt.Println("Auth:")
-	fmt.Println(auth)
-	fmt.Println()
+	//fmt.Println(auth)
 
 	req.Header.Set("Authorization", auth)
 	resp, err := c.httpClient.Do(req)
@@ -82,11 +80,6 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	str := string(body)
-	fmt.Println("Response body:")
-	fmt.Println(str)
-	fmt.Println()
 
 	// Check status code
 	switch resp.StatusCode {
@@ -138,12 +131,11 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 
 	// Build the signature base string
 	signatureBaseString := []byte("POST&" + url.QueryEscape(signUrl) + "&" + url.QueryEscape(sorted.Encode()))
-	//fmt.Println(string(signatureBaseString))
 
 	// Calculate HMAC-SHA1
 	mac := hmac.New(sha1.New, []byte(hmacKey))
 	mac.Write(signatureBaseString)
-	oauthSignature := base64.URLEncoding.EncodeToString(mac.Sum(nil))
+	oauthSignature := base64.StdEncoding.EncodeToString(mac.Sum(nil))
 	//fmt.Println(oauthSignature)
 
 	// Build the Authorization header
@@ -168,7 +160,8 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 	return "OAuth " + strings.Replace(strings.Replace(authorizationParams.Encode(), "&", ", ", -1), "%22", `"`, -1)
 }
 
-func (c *Client) StartAuth() ([]byte, error) {
+func (c *Client) StartAuth() (url.Values, error) {
+	// Request token
 	params := url.Values{
 		"oauth_callback": []string{"oob"},
 	}
@@ -178,10 +171,17 @@ func (c *Client) StartAuth() ([]byte, error) {
 		return nil, err
 	}
 
-	return body, nil
+	// Parse response to extract login url, request token, and request secret
+	m, err := url.ParseQuery(string(body))
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
 
-func (c *Client) CompleteAuth(verifier string) ([]byte, error) {
+func (c *Client) CompleteAuth(verifier string) (url.Values, error) {
+	// Request exchange for access token
 	params := url.Values{
 		"oauth_verifier": []string{"verifier"},
 	}
@@ -191,5 +191,11 @@ func (c *Client) CompleteAuth(verifier string) ([]byte, error) {
 		return nil, err
 	}
 
-	return body, nil
+	// Parse response to extract access token and secret
+	m, err := url.ParseQuery(string(body))
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }

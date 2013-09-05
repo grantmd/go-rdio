@@ -12,26 +12,27 @@ func TestStartAuth(t *testing.T) {
 		ConsumerSecret: "s53DhwNxuq",
 	}
 
-	body, err := c.StartAuth()
+	auth, err := c.StartAuth()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(body)
+	fmt.Println(auth)
 }
 
-/*func TestCompleteAuth(t *testing.T) {
+/*
+func TestCompleteAuth(t *testing.T) {
 	c := &Client{
 		ConsumerKey:    "c9jx7x67bkmqm6ygnjwmbubd",
 		ConsumerSecret: "s53DhwNxuq",
 	}
 
-	body, err := c.CompleteAuth("")
+	auth, err := c.CompleteAuth("")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(body)
+	fmt.Println(auth)
 }
 
 func TestClient(t *testing.T) {
