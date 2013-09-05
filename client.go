@@ -22,6 +22,7 @@ const (
 	RDIO_OAUTH_ENDPOINT = "http://api.rdio.com/oauth/"
 )
 
+// The client holds the necessary keys and our HTTP client for making requests
 type Client struct {
 	ConsumerKey    string
 	ConsumerSecret string
@@ -30,6 +31,7 @@ type Client struct {
 	httpClient     *http.Client
 }
 
+// Call an API method with auth
 func (c *Client) Call(method string, params url.Values) (interface{}, error) {
 	params["method"] = []string{method}
 	body, err := c.SignedPost(RDIO_API_ENDPOINT, params)
@@ -47,6 +49,7 @@ func (c *Client) Call(method string, params url.Values) (interface{}, error) {
 	return f, nil
 }
 
+// Sign a request with OAuth and send it to Rdio
 func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 
 	// Build HTTP client
@@ -99,6 +102,7 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 	return body, nil
 }
 
+// Calculate an OAuth signature
 func (c *Client) Sign(signUrl string, params url.Values) string {
 	rand.Seed(time.Now().UnixNano())
 	params["oauth_version"] = []string{"1.0"}
@@ -160,6 +164,7 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 	return "OAuth " + strings.Replace(strings.Replace(authorizationParams.Encode(), "&", ", ", -1), "%22", `"`, -1)
 }
 
+// Start the OAuth process by fetching a request token and url to send the user to
 func (c *Client) StartAuth() (url.Values, error) {
 	// Request token
 	params := url.Values{
@@ -184,6 +189,7 @@ func (c *Client) StartAuth() (url.Values, error) {
 	return m, nil
 }
 
+// Take the OAuth verifier/PIN and exchange it for an access token so we can make requests
 func (c *Client) CompleteAuth(verifier string) (url.Values, error) {
 	// Request exchange for access token
 	params := url.Values{
