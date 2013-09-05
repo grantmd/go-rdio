@@ -10,27 +10,27 @@ Usage
 
 * Install the library:
 
-	go get github.com/mrjones/oauth
+	`go get github.com/mrjones/oauth`
 
 * Include it in your project:
 
-	import "github.com/grantmd/go-rdio"
+	`import "github.com/grantmd/go-rdio"`
 
 * Setup your Rdio client:
 
-	c := &rdio.Client{
-		ConsumerKey:    config.ConsumerKey,
-		ConsumerSecret: config.ConsumerSecret,
-	}
+    c := &rdio.Client{
+    	ConsumerKey:    config.ConsumerKey,
+    	ConsumerSecret: config.ConsumerSecret,
+    }
 
 * Authenticate against the Rdio API as a user:
 
-	auth, err := c.StartAuth()
-	// Redirect the user to Rdio and get their verifier
-	// ...
-	auth, err = c.CompleteAuth(string(verifier))
-	params := make(map[string][]string)
-	body, err := c.Call("getNewReleases", params)
+    auth, err := c.StartAuth()
+    // Redirect the user to Rdio and get their verifier
+    // ...
+    auth, err = c.CompleteAuth(string(verifier))
+    params := make(map[string][]string)
+    body, err := c.Call("getNewReleases", params)
 
 Examples
 --------
