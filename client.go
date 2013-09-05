@@ -32,7 +32,7 @@ type Client struct {
 }
 
 // Call an API method with auth
-func (c *Client) Call(method string, params url.Values) (interface{}, error) {
+func (c *Client) Call(method string, params url.Values) (map[string]interface{}, error) {
 	params["method"] = []string{method}
 	body, err := c.SignedPost(RDIO_API_ENDPOINT, params)
 	if err != nil {
@@ -46,7 +46,16 @@ func (c *Client) Call(method string, params url.Values) (interface{}, error) {
 		return nil, err
 	}
 
-	return f, nil
+	// At the very least, we should be able to assume that the top-level keys are all strings
+	m := f.(map[string]interface{})
+	fmt.Println(m)
+
+	// Did we get an 'ok' in the hash?
+	if m["status"] != "ok" {
+		return m, errors.New("API response not 'ok'")
+	}
+
+	return m, nil
 }
 
 // Sign a request with OAuth and send it to Rdio
