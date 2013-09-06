@@ -2,3 +2,5 @@ go:
 - "1.0"
 - "1.1"
 language: go
+before_script:
+- "cp example/example_config.go.sample example/example_config.go"
