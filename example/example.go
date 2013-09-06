@@ -52,5 +52,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(albums)
+	for _, album := range albums {
+		fmt.Printf("%s - %s (http://www.rdio.com%s)\n", album.Name, album.Artist, album.Url)
+	}
 }

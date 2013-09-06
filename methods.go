@@ -1,32 +1,33 @@
 package rdio
 
 import (
-	"fmt"
-	"reflect"
+	"encoding/json"
+	"errors"
 )
 
 func (c *Client) GetNewReleases() ([]Album, error) {
 	params := make(map[string][]string)
-	data, err := c.Call("getNewReleases", params)
+	body, err := c.Call("getNewReleases", params)
 	if err != nil {
 		return nil, err
 	}
 
-	var albums []Album
-	err = parseResult(data, &albums)
+	type Response struct {
+		Status string
+		Result []Album
+	}
+
+	// parse into json
+	var response Response
+	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return nil, err
 	}
 
-	return albums, nil
-}
-
-// Private function to take the API response JSON and stuff it into whatever struct we want
-func parseResult(data map[string]interface{}, v interface{}) error {
-	fmt.Println(reflect.ValueOf(v).Kind())
-	result := data["result"].([]interface{})
-	for _, item := range result {
-		fmt.Println(item)
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
 	}
-	return nil
+
+	return response.Result, nil
 }

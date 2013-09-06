@@ -30,7 +30,7 @@ Usage
         // ...
         auth, err = c.CompleteAuth(string(verifier))
         albums, err := c.GetNewReleases()
-        fmt.Println(albums)
+        fmt.Printf("%#v\n", albums)
 
 Examples
 --------

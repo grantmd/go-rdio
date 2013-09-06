@@ -4,7 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -31,31 +30,15 @@ type Client struct {
 	httpClient     *http.Client
 }
 
-// Call an API method with auth
-func (c *Client) Call(method string, params url.Values) (map[string]interface{}, error) {
+// Call an API method with auth, return the raw, unprocessed body
+func (c *Client) Call(method string, params url.Values) ([]byte, error) {
 	params["method"] = []string{method}
 	body, err := c.SignedPost(RDIO_API_ENDPOINT, params)
 	if err != nil {
 		return nil, err
 	}
 
-	// parse into json
-	var f interface{}
-	err = json.Unmarshal(body, &f)
-	if err != nil {
-		return nil, err
-	}
-
-	// At the very least, we should be able to assume that the top-level keys are all strings
-	m := f.(map[string]interface{})
-	//fmt.Println(m)
-
-	// Did we get an 'ok' in the hash?
-	if m["status"] != "ok" {
-		return m, errors.New("API response not 'ok'")
-	}
-
-	return m, nil
+	return body, nil
 }
 
 // Sign a request with OAuth and send it to Rdio
