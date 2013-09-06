@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"github.com/grantmd/go-rdio"
 	"log"
@@ -9,12 +10,25 @@ import (
 )
 
 func main() {
-	// Build a client object with our keys
-	c := &rdio.Client{
-		ConsumerKey:    config.ConsumerKey,
-		ConsumerSecret: config.ConsumerSecret,
-		Token:          config.Token,
-		TokenSecret:    config.TokenSecret,
+	// Build a client object
+	c := &rdio.Client{}
+
+	// Parse command-line options
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "usage: ./example -consumer_key=foo -consumer_secret=bar\n")
+		flag.PrintDefaults()
+	}
+
+	flag.StringVar(&c.ConsumerKey, "consumer_key", "", "Your Rdio API consumer key")
+	flag.StringVar(&c.ConsumerSecret, "consumer_secret", "", "Your Rdio API consumer secret")
+	flag.StringVar(&c.Token, "token", "", "Rdio API user token")
+	flag.StringVar(&c.TokenSecret, "token_secret", "", "Rdio API user secret")
+
+	flag.Parse()
+
+	if c.ConsumerKey == "" || c.ConsumerSecret == "" {
+		flag.Usage()
+		os.Exit(2)
 	}
 
 	if c.Token == "" {
