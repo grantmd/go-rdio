@@ -35,4 +35,4 @@ Usage
 Examples
 --------
 
-There is an example in the `example/` directory. Copy the `example_config.go.sample` file to `example_config.go`, then `go build` and then run `./example`
+There is an example in the `example/` directory. `go build` and then run `./example` for usage information.
