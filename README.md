@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/grantmd/go-rdio.png?branch=master)](https://travis-ci.org/grantmd/go-rdio)
+
 go-rdio
 =======
 
