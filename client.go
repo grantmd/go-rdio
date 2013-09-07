@@ -30,6 +30,13 @@ type Client struct {
 	httpClient     *http.Client
 }
 
+// Portable analogs of some common errors.
+var (
+	ErrBadRequest        = errors.New("400: Bad Request")
+	ErrInvalidSignature  = errors.New("401: Invalid Signature")
+	ErrDeveloperInactive = errors.New("403: Developer Inactive")
+)
+
 // Call an API method with auth, return the raw, unprocessed body
 func (c *Client) Call(method string, params url.Values) ([]byte, error) {
 	params["method"] = []string{method}
@@ -81,11 +88,11 @@ func (c *Client) SignedPost(postUrl string, params url.Values) ([]byte, error) {
 	default:
 		return nil, fmt.Errorf("Unknown status code: %d", resp.StatusCode)
 	case 400:
-		return nil, errors.New("400: Bad Request")
+		return nil, ErrBadRequest
 	case 401:
-		return nil, errors.New("401: Invalid Signature")
+		return nil, ErrInvalidSignature
 	case 403:
-		return nil, errors.New("403: Developer Inactive")
+		return nil, ErrDeveloperInactive
 	case 200:
 
 	}

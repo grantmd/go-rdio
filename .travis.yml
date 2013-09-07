@@ -1,4 +1,6 @@
+env: 
+  secure: YDi8/uG60BDa+50wnnozVTFZKpMGTa7Nrcdw58/iduZlkHAHkPr2ObOXT9iGwMmhd32DfgvDj88U9xRNACZ0buLSCiEXP2CKPgH3JlfdgJ5oDSo/xZt7EwH4C3kN46MwomH2WA7c3HDhpTv6VLKH60WaHihLTUrKqSx9JWKVZ6g=
+language: go
 go: 
 - "1.0"
 - "1.1"
-language: go
