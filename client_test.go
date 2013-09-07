@@ -20,6 +20,14 @@ func TestClientAuth(t *testing.T) {
 		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
 	}
 
+	if c.ConsumerKey == "" {
+		t.Error("Rdio api key is missing (should be in the RDIO_API_KEY environment variable)")
+	}
+
+	if c.ConsumerSecret == "" {
+		t.Error("Rdio api secret is missing (should be in the RDIO_API_SECRET environment variable)")
+	}
+
 	auth, err := c.StartAuth()
 	if err != nil {
 		t.Error(err)
