@@ -8,6 +8,8 @@
 //
 // List of methods is here: http://developer.rdio.com/docs/read/rest/Methods
 //
+// TODO: Some of these methods do not require auth. Do we care?
+//
 
 package rdio
 
@@ -15,11 +17,206 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
+	"strings"
 )
 
 // Core
 // Catalog
+
+func (c *Client) GetAlbumsByUPC(upc string) ([]Album, error) {
+	params := url.Values{
+		"upc": []string{upc},
+	}
+	body, err := c.Call("getAlbumsByUPC", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getAlbumResponse(body)
+}
+
+func (c *Client) GetAlbumsForArtist(artistKey string) ([]Album, error) {
+	params := url.Values{
+		"artist": []string{artistKey},
+	}
+	body, err := c.Call("getAlbumsForArtist", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getAlbumResponse(body)
+}
+
+func (c *Client) GetAlbumsForLabel(labelKey string) ([]Album, error) {
+	params := url.Values{
+		"label": []string{labelKey},
+	}
+	body, err := c.Call("getAlbumsForLabel", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getAlbumResponse(body)
+}
+
+func (c *Client) GetArtistsForLabel(labelKey string) ([]Artist, error) {
+	params := url.Values{
+		"label": []string{labelKey},
+	}
+	body, err := c.Call("getArtistsForLabel", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getArtistResponse(body)
+}
+
+func (c *Client) GetTracksByISRC(isrc string) ([]Track, error) {
+	params := url.Values{
+		"isrc": []string{isrc},
+	}
+	body, err := c.Call("getTracksByISRC", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getTrackResponse(body)
+}
+
+func (c *Client) GetTracksForArtist(artistKey string) ([]Track, error) {
+	params := url.Values{
+		"artist": []string{artistKey},
+	}
+	body, err := c.Call("getTracksForArtist", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getTrackResponse(body)
+}
+
+// TODO: search and searchSuggestions
+
 // Collection
+
+func (c *Client) AddToCollection(keys []string) (bool, error) {
+	params := url.Values{
+		"keys": []string{strings.Join(keys, ",")},
+	}
+	body, err := c.Call("addToCollection", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) GetAlbumsForArtistInCollection(artistKey string) ([]Album, error) {
+	params := url.Values{
+		"artist": []string{artistKey},
+	}
+	body, err := c.Call("getAlbumsForArtistInCollection", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getAlbumResponse(body)
+}
+
+func (c *Client) GetAlbumsInCollection() ([]Album, error) {
+	params := url.Values{}
+	body, err := c.Call("getAlbumsInCollection", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getAlbumResponse(body)
+}
+
+func (c *Client) GetArtistsInCollection() ([]Artist, error) {
+	params := url.Values{}
+	body, err := c.Call("getArtistsInCollection", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getArtistResponse(body)
+}
+
+func (c *Client) GetOfflineTracks() ([]Track, error) {
+	params := url.Values{}
+	body, err := c.Call("getOfflineTracks", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getTrackResponse(body)
+}
+
+func (c *Client) GetTracksForAlbumInCollection(albumKey string) ([]Track, error) {
+	params := url.Values{
+		"album": []string{albumKey},
+	}
+	body, err := c.Call("getTracksForAlbumInCollection", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getTrackResponse(body)
+}
+
+func (c *Client) GetTracksForArtistInCollection(artistKey string) ([]Track, error) {
+	params := url.Values{
+		"artist": []string{artistKey},
+	}
+	body, err := c.Call("getTracksForArtistInCollection", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getTrackResponse(body)
+}
+
+func (c *Client) GetTracksInCollection() ([]Track, error) {
+	params := url.Values{}
+	body, err := c.Call("getTracksInCollection", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getTrackResponse(body)
+}
+
+func (c *Client) RemoveFromCollection(keys []string) (bool, error) {
+	params := url.Values{
+		"keys": []string{strings.Join(keys, ",")},
+	}
+	body, err := c.Call("removeFromCollection", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) SetAvailableOffline(keys []string, offline bool) (bool, error) {
+	offlineString := "false"
+	if offline {
+		offlineString = "true"
+	}
+
+	params := url.Values{
+		"keys":    []string{strings.Join(keys, ",")},
+		"offline": []string{offlineString},
+	}
+	body, err := c.Call("setAvailableOffline", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
 // Playlists
 // Comments
 // Social
@@ -127,24 +324,7 @@ func (c *Client) GetPlaybackToken() (string, error) {
 		return "", err
 	}
 
-	type Response struct {
-		Status string
-		Result string
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return "", err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return "", errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getStringResponse(body)
 }
 
 // Private functions for parsing responses
@@ -228,6 +408,48 @@ func (c *Client) getTrackResponse(body []byte) ([]Track, error) {
 	// Check that we got an OK
 	if response.Status != "ok" {
 		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getStringResponse(body []byte) (string, error) {
+	type Response struct {
+		Status string
+		Result string
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return "", err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return "", errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getBoolResponse(body []byte) (bool, error) {
+	type Response struct {
+		Status string
+		Result bool
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return false, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return false, errors.New("Got non-ok response from the Rdio API")
 	}
 
 	return response.Result, nil
