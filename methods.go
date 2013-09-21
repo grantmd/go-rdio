@@ -139,14 +139,14 @@ func (c *Client) GetAlbumsInCollection() ([]Album, error) {
 	return c.getAlbumResponse(body)
 }
 
-func (c *Client) GetArtistsInCollection() ([]Artist, error) {
+func (c *Client) GetArtistsInCollection() ([]CollectionArtist, error) {
 	params := url.Values{}
 	body, err := c.Call("getArtistsInCollection", params)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.getArtistResponse(body)
+	return c.getCollectionArtistResponse(body)
 }
 
 func (c *Client) GetOfflineTracks() ([]Track, error) {
@@ -456,6 +456,27 @@ func (c *Client) getBoolResponse(body []byte) (bool, error) {
 	// Check that we got an OK
 	if response.Status != "ok" {
 		return false, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getCollectionArtistResponse(body []byte) ([]CollectionArtist, error) {
+	type Response struct {
+		Status string
+		Result []CollectionArtist
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
 	}
 
 	return response.Result, nil

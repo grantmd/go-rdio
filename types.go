@@ -35,7 +35,7 @@ type Artist struct {
 	Key         string // the artist's key
 	Type        string // the object type, always "r"
 	Url         string // the URL of the artist on the Rdio web site
-	Length      string // the number of tracks that the artist has on Rdio
+	Length      int    // the number of tracks that the artist has on Rdio
 	Icon        string // an image for the artist
 	BaseIcon    string // an image for the artist, partial URL
 	HasRadio    bool   // is a station available for the artist?

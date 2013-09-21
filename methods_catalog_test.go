@@ -62,8 +62,23 @@ func TestGetAlbumsForArtist(t *testing.T) {
 	}
 }
 
-// TODO: TestGetAlbumsForLabel
-// TODO: TestGetArtistsForLabel
+func TestTestGetAlbumsForLabel(t *testing.T) {
+	c := createCatalogClient(t)
+
+	_, err := c.GetAlbumsForLabel("l755") // Rhino
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGetArtistsForLabel(t *testing.T) {
+	c := createCatalogClient(t)
+
+	_, err := c.GetArtistsForLabel("l755") // Rhino
+	if err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestGetTracksByISRC(t *testing.T) {
 	c := createCatalogClient(t)
