@@ -520,10 +520,8 @@ func (c *Client) UserHiddenFollowers() ([]User, error) {
 	return c.getUsersResponse(body)
 }
 
-func (c *Client) UserPendingFollowers(userKey string) ([]User, error) {
-	params := url.Values{
-		"user": []string{userKey},
-	}
+func (c *Client) UserPendingFollowers() ([]User, error) {
+	params := url.Values{}
 	body, err := c.Call("userPendingFollowers", params)
 	if err != nil {
 		return nil, err

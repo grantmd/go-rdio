@@ -107,7 +107,7 @@ type User struct {
 	LastName       string // the last name of the user
 	Icon           string // the URL of an image of the user
 	BaseIcon       string // the URL of an image of the user
-	LibraryVersion string // the library version of the user, used to determine if a user's collection has changed
+	LibraryVersion int    // the library version of the user, used to determine if a user's collection has changed
 	Url            string // the URL of the user on the Rdio site
 	Gender         string // "m" or "f"
 	Type           string // the object type, always "s"
