@@ -8,7 +8,7 @@ An API client for Rdio in Go (golang)
 Usage
 -----
 
-* First, get yourself an Rdio api key: http://developer.rdio.com/
+* First, get yourself an Rdio api key: http://www.rdio.com/developers/
 
 * Install the library:
 

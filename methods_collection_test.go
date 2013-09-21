@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func createPlaybackClient(t *testing.T) (c *Client) {
+func createCollectionClient(t *testing.T) (c *Client) {
 	c = &Client{
 		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
 		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
@@ -32,15 +32,14 @@ func createPlaybackClient(t *testing.T) (c *Client) {
 	return c
 }
 
-func TestGetPlaybackToken(t *testing.T) {
-	c := createPlaybackClient(t)
+func TestGetOfflineTracks(t *testing.T) {
+	c := createCollectionClient(t)
 
-	token, err := c.GetPlaybackToken()
+	_, err := c.GetOfflineTracks()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if token == "" {
-		t.Error("Token is empty")
-	}
+	// TODO: How to test this? I don't have any offline tracks, but other people do
+	// Maybe the fact that we got this far is good enough?
 }

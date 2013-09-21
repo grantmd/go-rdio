@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func createPlaybackClient(t *testing.T) (c *Client) {
+func createCatalogClient(t *testing.T) (c *Client) {
 	c = &Client{
 		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
 		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
@@ -32,15 +32,36 @@ func createPlaybackClient(t *testing.T) (c *Client) {
 	return c
 }
 
-func TestGetPlaybackToken(t *testing.T) {
-	c := createPlaybackClient(t)
+func TestGetAlbumsByUPC(t *testing.T) {
+	c := createCatalogClient(t)
 
-	token, err := c.GetPlaybackToken()
+	albums, err := c.GetAlbumsByUPC("011661811324")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if token == "" {
-		t.Error("Token is empty")
+	if len(albums) != 1 {
+		t.Fatalf("Album length is %d instead of 1", len(albums))
+	}
+
+	if albums[0].Name != "No!" {
+		t.Errorf("Album title is %s instead of No!", albums[0].Name)
+	}
+}
+
+func TestGetAlbumsForArtist(t *testing.T) {
+	c := createCatalogClient(t)
+
+	albums, err := c.GetAlbumsByUPC("011661811324")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(albums) != 1 {
+		t.Fatalf("Album length is %d instead of 1", len(albums))
+	}
+
+	if albums[0].Name != "No!" {
+		t.Errorf("Album title is %s instead of No!", albums[0].Name)
 	}
 }

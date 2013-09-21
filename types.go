@@ -1,6 +1,6 @@
 //
 // A collection of Rdio API object types:
-// http://developer.rdio.com/docs/read/rest/types
+// http://www.rdio.com/developers/docs/web-service/types/
 //
 
 package rdio

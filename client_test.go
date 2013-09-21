@@ -31,7 +31,7 @@ func TestClientAuth(t *testing.T) {
 
 	auth, err := c.StartAuth()
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if auth.Get("login_url") == "" {
@@ -78,7 +78,7 @@ func TestClientCall(t *testing.T) {
 	params := url.Values{}
 	body, err := c.Call("getPlaybackToken", params)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	s := string(body)

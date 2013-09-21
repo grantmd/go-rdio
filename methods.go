@@ -6,7 +6,7 @@
 // Unfortunately, there is a bit of repetition in this code (the Response struct and
 // checking the Status == "ok" response), but I don't know how to consolidate it.
 //
-// List of methods is here: http://developer.rdio.com/docs/read/rest/Methods
+// List of methods is here: http://www.rdio.com/developers/docs/web-service/methods/
 //
 // TODO: Some of these methods do not require auth. Do we care?
 // TODO: Consistent pagination args for those that do pagination
