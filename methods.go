@@ -33,24 +33,7 @@ func (c *Client) GetActivityStream() ([]Album, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Album
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getAlbumResponse(body)
 }
 
 func (c *Client) GetHeavyRotationAlbums() ([]Album, error) {
@@ -62,24 +45,7 @@ func (c *Client) GetHeavyRotationAlbums() ([]Album, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Album
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getAlbumResponse(body)
 }
 
 func (c *Client) GetHeavyRotationArtists() ([]Artist, error) {
@@ -91,24 +57,7 @@ func (c *Client) GetHeavyRotationArtists() ([]Artist, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Artist
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getArtistResponse(body)
 }
 
 func (c *Client) GetNewReleases() ([]Album, error) {
@@ -118,24 +67,7 @@ func (c *Client) GetNewReleases() ([]Album, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Album
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getAlbumResponse(body)
 }
 
 func (c *Client) GetTopChartsArtists() ([]Artist, error) {
@@ -147,24 +79,7 @@ func (c *Client) GetTopChartsArtists() ([]Artist, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Artist
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getArtistResponse(body)
 }
 
 func (c *Client) GetTopChartsAlbums() ([]Album, error) {
@@ -176,24 +91,7 @@ func (c *Client) GetTopChartsAlbums() ([]Album, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Album
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getAlbumResponse(body)
 }
 
 func (c *Client) GetTopChartsTracks() ([]Track, error) {
@@ -205,24 +103,7 @@ func (c *Client) GetTopChartsTracks() ([]Track, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Track
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getTrackResponse(body)
 }
 
 func (c *Client) GetTopChartsPlaylists() ([]Playlist, error) {
@@ -234,24 +115,7 @@ func (c *Client) GetTopChartsPlaylists() ([]Playlist, error) {
 		return nil, err
 	}
 
-	type Response struct {
-		Status string
-		Result []Playlist
-	}
-
-	// parse into json
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check that we got an OK
-	if response.Status != "ok" {
-		return nil, errors.New("Got non-ok response from the Rdio API")
-	}
-
-	return response.Result, nil
+	return c.getPlaylistResponse(body)
 }
 
 // Playback
@@ -278,6 +142,92 @@ func (c *Client) GetPlaybackToken() (string, error) {
 	// Check that we got an OK
 	if response.Status != "ok" {
 		return "", errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+// Private functions for parsing responses
+
+func (c *Client) getPlaylistResponse(body []byte) ([]Playlist, error) {
+	type Response struct {
+		Status string
+		Result []Playlist
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getAlbumResponse(body []byte) ([]Album, error) {
+	type Response struct {
+		Status string
+		Result []Album
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getArtistResponse(body []byte) ([]Artist, error) {
+	type Response struct {
+		Status string
+		Result []Artist
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getTrackResponse(body []byte) ([]Track, error) {
+	type Response struct {
+		Status string
+		Result []Track
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
 	}
 
 	return response.Result, nil
