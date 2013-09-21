@@ -9,6 +9,8 @@
 // List of methods is here: http://developer.rdio.com/docs/read/rest/Methods
 //
 // TODO: Some of these methods do not require auth. Do we care?
+// TODO: Consistent pagination args for those that do pagination
+// TODO: We don't support any of the optional args yet
 //
 
 package rdio
@@ -21,6 +23,9 @@ import (
 )
 
 // Core
+
+// TODO: These are all hard for me, since they can return all different Types, so skipping for now
+
 // Catalog
 
 func (c *Client) GetAlbumsByUPC(upc string) ([]Album, error) {
