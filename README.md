@@ -5,6 +5,8 @@ go-rdio
 
 An API client for Rdio in Go (golang)
 
+**This is not complete. Many methods haven't been implemented, and those that have don't support optional arguments, etc.** If you would like to help, even just to add a single method or improve some documentation, please make _clean_ and _small_ pull requests. You will get credit for helping. Thanks! 
+
 Usage
 -----
 
