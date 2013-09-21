@@ -85,20 +85,20 @@ type Track struct {
 }
 
 type Playlist struct {
-	Name        string // the name of the playlist
-	Length      string // the number of tracks in the playlist
-	Type        string // the object type, always "p"
-	Url         string // the URL of the playlist on the Rdio site
-	Icon        string // the URL of an icon for the playlist
-	BaseIcon    string // the URL of an icon for the playlist
-	Owner       string // the name of the user who created the playlist
-	OwnerUrl    string // the URL on the Rdio site of the user who created the playlist
-	OwnerKey    string // the key of the user who created the playlist
-	OwnerIcon   string // the icon of the user who created the playlist
-	LastUpdated string // when the playlist was last modified
-	ShortUrl    string // a short URL for the playlist
-	EmbedUrl    string // the URL of a SWF to embed the playlist
-	Key         string // the key of the playlist
+	Name        string  // the name of the playlist
+	Length      int     // the number of tracks in the playlist
+	Type        string  // the object type, always "p"
+	Url         string  // the URL of the playlist on the Rdio site
+	Icon        string  // the URL of an icon for the playlist
+	BaseIcon    string  // the URL of an icon for the playlist
+	Owner       string  // the name of the user who created the playlist
+	OwnerUrl    string  // the URL on the Rdio site of the user who created the playlist
+	OwnerKey    string  // the key of the user who created the playlist
+	OwnerIcon   string  // the icon of the user who created the playlist
+	LastUpdated float32 // when the playlist was last modified
+	ShortUrl    string  // a short URL for the playlist
+	EmbedUrl    string  // the URL of a SWF to embed the playlist
+	Key         string  // the key of the playlist
 }
 
 type User struct {
