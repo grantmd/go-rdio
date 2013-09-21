@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -38,7 +39,7 @@ func (c *Client) GetAlbumsByUPC(upc string) ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetAlbumsForArtist(artistKey string) ([]Album, error) {
@@ -50,7 +51,7 @@ func (c *Client) GetAlbumsForArtist(artistKey string) ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetAlbumsForLabel(labelKey string) ([]Album, error) {
@@ -62,7 +63,7 @@ func (c *Client) GetAlbumsForLabel(labelKey string) ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetArtistsForLabel(labelKey string) ([]Artist, error) {
@@ -74,7 +75,7 @@ func (c *Client) GetArtistsForLabel(labelKey string) ([]Artist, error) {
 		return nil, err
 	}
 
-	return c.getArtistResponse(body)
+	return c.getArtistsResponse(body)
 }
 
 func (c *Client) GetTracksByISRC(isrc string) ([]Track, error) {
@@ -86,7 +87,7 @@ func (c *Client) GetTracksByISRC(isrc string) ([]Track, error) {
 		return nil, err
 	}
 
-	return c.getTrackResponse(body)
+	return c.getTracksResponse(body)
 }
 
 func (c *Client) GetTracksForArtist(artistKey string) ([]Track, error) {
@@ -98,7 +99,7 @@ func (c *Client) GetTracksForArtist(artistKey string) ([]Track, error) {
 		return nil, err
 	}
 
-	return c.getTrackResponse(body)
+	return c.getTracksResponse(body)
 }
 
 // TODO: search and searchSuggestions
@@ -126,7 +127,7 @@ func (c *Client) GetAlbumsForArtistInCollection(artistKey string) ([]Album, erro
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetAlbumsInCollection() ([]Album, error) {
@@ -136,7 +137,7 @@ func (c *Client) GetAlbumsInCollection() ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetArtistsInCollection() ([]CollectionArtist, error) {
@@ -146,7 +147,7 @@ func (c *Client) GetArtistsInCollection() ([]CollectionArtist, error) {
 		return nil, err
 	}
 
-	return c.getCollectionArtistResponse(body)
+	return c.getCollectionArtistsResponse(body)
 }
 
 func (c *Client) GetOfflineTracks() ([]Track, error) {
@@ -156,7 +157,7 @@ func (c *Client) GetOfflineTracks() ([]Track, error) {
 		return nil, err
 	}
 
-	return c.getTrackResponse(body)
+	return c.getTracksResponse(body)
 }
 
 func (c *Client) GetTracksForAlbumInCollection(albumKey string) ([]Track, error) {
@@ -168,7 +169,7 @@ func (c *Client) GetTracksForAlbumInCollection(albumKey string) ([]Track, error)
 		return nil, err
 	}
 
-	return c.getTrackResponse(body)
+	return c.getTracksResponse(body)
 }
 
 func (c *Client) GetTracksForArtistInCollection(artistKey string) ([]Track, error) {
@@ -180,7 +181,7 @@ func (c *Client) GetTracksForArtistInCollection(artistKey string) ([]Track, erro
 		return nil, err
 	}
 
-	return c.getTrackResponse(body)
+	return c.getTracksResponse(body)
 }
 
 func (c *Client) GetTracksInCollection() ([]Track, error) {
@@ -190,7 +191,7 @@ func (c *Client) GetTracksInCollection() ([]Track, error) {
 		return nil, err
 	}
 
-	return c.getTrackResponse(body)
+	return c.getTracksResponse(body)
 }
 
 func (c *Client) RemoveFromCollection(keys []string) (bool, error) {
@@ -224,6 +225,158 @@ func (c *Client) SetAvailableOffline(keys []string, offline bool) (bool, error) 
 }
 
 // Playlists
+
+func (c *Client) AddToPlaylist(playlistKey string, trackKeys []string) (*Playlist, error) {
+	params := url.Values{
+		"playlist": []string{playlistKey},
+		"tracks":   []string{strings.Join(trackKeys, ",")},
+	}
+	body, err := c.Call("addToPlaylist", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getPlaylistResponse(body)
+}
+
+func (c *Client) CreatePlaylist(name string, description string, trackKeys []string) (*Playlist, error) {
+	params := url.Values{
+		"name":        []string{name},
+		"description": []string{description},
+		"tracks":      []string{strings.Join(trackKeys, ",")},
+	}
+	body, err := c.Call("createPlaylist", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getPlaylistResponse(body)
+}
+
+func (c *Client) DeletePlaylist(playlistKey string) (bool, error) {
+	params := url.Values{
+		"playlist": []string{playlistKey},
+	}
+	body, err := c.Call("deletePlaylist", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) GetPlaylists() (*UserPlaylists, error) {
+	params := url.Values{}
+	body, err := c.Call("getPlaylists", params)
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Status string
+		Result *UserPlaylists
+	}
+
+	// parse into json
+	var response Response
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) GetUserPlaylists(userKey string) ([]Playlist, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("getUserPlaylists", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getPlaylistsResponse(body)
+}
+
+func (c *Client) RemoveFromPlaylist(playlistKey string, index int, count int, trackKeys []string) (*Playlist, error) {
+	params := url.Values{
+		"playlist": []string{playlistKey},
+		"index":    []string{strconv.Itoa(index)},
+		"count":    []string{strconv.Itoa(count)},
+		"tracks":   []string{strings.Join(trackKeys, ",")},
+	}
+	body, err := c.Call("removeFromPlaylist", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getPlaylistResponse(body)
+}
+
+func (c *Client) SetPlaylistCollaborating(playlistKey string, collaborating bool) (bool, error) {
+	collaboratingString := "false"
+	if collaborating {
+		collaboratingString = "true"
+	}
+
+	params := url.Values{
+		"playlist":      []string{playlistKey},
+		"collaborating": []string{collaboratingString},
+	}
+	body, err := c.Call("setPlaylistCollaborating", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) SetPlaylistCollaborationMode(playlistKey string, mode int) (bool, error) {
+	params := url.Values{
+		"playlist": []string{playlistKey},
+		"mode":     []string{strconv.Itoa(mode)},
+	}
+	body, err := c.Call("setPlaylistCollaborationMode", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) SetPlaylistFields(playlistKey string, name string, description string) (bool, error) {
+	params := url.Values{
+		"playlist":    []string{playlistKey},
+		"name":        []string{name},
+		"description": []string{description},
+	}
+	body, err := c.Call("setPlaylistFields", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) SetPlaylistOrder(playlistKey string, trackKeys []string) (*Playlist, error) {
+	params := url.Values{
+		"playlist": []string{playlistKey},
+		"tracks":   []string{strings.Join(trackKeys, ",")},
+	}
+	body, err := c.Call("setPlaylistOrder", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getPlaylistResponse(body)
+}
+
 // Comments
 // Social
 // Network
@@ -236,7 +389,7 @@ func (c *Client) GetActivityStream() ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetHeavyRotationAlbums() ([]Album, error) {
@@ -248,7 +401,7 @@ func (c *Client) GetHeavyRotationAlbums() ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetHeavyRotationArtists() ([]Artist, error) {
@@ -260,7 +413,7 @@ func (c *Client) GetHeavyRotationArtists() ([]Artist, error) {
 		return nil, err
 	}
 
-	return c.getArtistResponse(body)
+	return c.getArtistsResponse(body)
 }
 
 func (c *Client) GetNewReleases() ([]Album, error) {
@@ -270,7 +423,7 @@ func (c *Client) GetNewReleases() ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetTopChartsArtists() ([]Artist, error) {
@@ -282,7 +435,7 @@ func (c *Client) GetTopChartsArtists() ([]Artist, error) {
 		return nil, err
 	}
 
-	return c.getArtistResponse(body)
+	return c.getArtistsResponse(body)
 }
 
 func (c *Client) GetTopChartsAlbums() ([]Album, error) {
@@ -294,7 +447,7 @@ func (c *Client) GetTopChartsAlbums() ([]Album, error) {
 		return nil, err
 	}
 
-	return c.getAlbumResponse(body)
+	return c.getAlbumsResponse(body)
 }
 
 func (c *Client) GetTopChartsTracks() ([]Track, error) {
@@ -306,7 +459,7 @@ func (c *Client) GetTopChartsTracks() ([]Track, error) {
 		return nil, err
 	}
 
-	return c.getTrackResponse(body)
+	return c.getTracksResponse(body)
 }
 
 func (c *Client) GetTopChartsPlaylists() ([]Playlist, error) {
@@ -318,7 +471,7 @@ func (c *Client) GetTopChartsPlaylists() ([]Playlist, error) {
 		return nil, err
 	}
 
-	return c.getPlaylistResponse(body)
+	return c.getPlaylistsResponse(body)
 }
 
 // Playback
@@ -335,7 +488,28 @@ func (c *Client) GetPlaybackToken() (string, error) {
 
 // Private functions for parsing responses
 
-func (c *Client) getPlaylistResponse(body []byte) ([]Playlist, error) {
+func (c *Client) getPlaylistResponse(body []byte) (*Playlist, error) {
+	type Response struct {
+		Status string
+		Result *Playlist
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getPlaylistsResponse(body []byte) ([]Playlist, error) {
 	type Response struct {
 		Status string
 		Result []Playlist
@@ -356,7 +530,28 @@ func (c *Client) getPlaylistResponse(body []byte) ([]Playlist, error) {
 	return response.Result, nil
 }
 
-func (c *Client) getAlbumResponse(body []byte) ([]Album, error) {
+func (c *Client) getAlbumResponse(body []byte) (*Album, error) {
+	type Response struct {
+		Status string
+		Result *Album
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getAlbumsResponse(body []byte) ([]Album, error) {
 	type Response struct {
 		Status string
 		Result []Album
@@ -377,7 +572,28 @@ func (c *Client) getAlbumResponse(body []byte) ([]Album, error) {
 	return response.Result, nil
 }
 
-func (c *Client) getArtistResponse(body []byte) ([]Artist, error) {
+func (c *Client) getArtistResponse(body []byte) (*Artist, error) {
+	type Response struct {
+		Status string
+		Result *Artist
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getArtistsResponse(body []byte) ([]Artist, error) {
 	type Response struct {
 		Status string
 		Result []Artist
@@ -398,7 +614,28 @@ func (c *Client) getArtistResponse(body []byte) ([]Artist, error) {
 	return response.Result, nil
 }
 
-func (c *Client) getTrackResponse(body []byte) ([]Track, error) {
+func (c *Client) getTrackResponse(body []byte) (*Track, error) {
+	type Response struct {
+		Status string
+		Result *Track
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getTracksResponse(body []byte) ([]Track, error) {
 	type Response struct {
 		Status string
 		Result []Track
@@ -461,7 +698,7 @@ func (c *Client) getBoolResponse(body []byte) (bool, error) {
 	return response.Result, nil
 }
 
-func (c *Client) getCollectionArtistResponse(body []byte) ([]CollectionArtist, error) {
+func (c *Client) getCollectionArtistsResponse(body []byte) ([]CollectionArtist, error) {
 	type Response struct {
 		Status string
 		Result []CollectionArtist

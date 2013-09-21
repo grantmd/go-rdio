@@ -256,3 +256,9 @@ type UserCollectionStation struct {
 	Name           string   // the name of the station
 	Url            string   // the URL of the collection
 }
+
+type UserPlaylists struct {
+	Owned      []Playlist
+	Collab     []Playlist
+	Subscribed []Playlist
+}
