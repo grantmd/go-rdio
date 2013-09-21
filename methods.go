@@ -25,6 +25,7 @@ import (
 // Core
 
 // TODO: These are all hard for me, since they can return all different Types, so skipping for now
+// Can we use the "type" prop on the results?
 
 // Catalog
 

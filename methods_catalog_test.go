@@ -52,16 +52,41 @@ func TestGetAlbumsByUPC(t *testing.T) {
 func TestGetAlbumsForArtist(t *testing.T) {
 	c := createCatalogClient(t)
 
-	albums, err := c.GetAlbumsByUPC("011661811324")
+	albums, err := c.GetAlbumsForArtist("r49021") // They Might Be Giants
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if len(albums) != 1 {
-		t.Fatalf("Album length is %d instead of 1", len(albums))
+	if len(albums) == 0 {
+		t.Fatal("Album length is 0, but TMBG is very prolific")
+	}
+}
+
+// TODO: TestGetAlbumsForLabel
+// TODO: TestGetArtistsForLabel
+
+func TestGetTracksByISRC(t *testing.T) {
+	c := createCatalogClient(t)
+
+	tracks, err := c.GetTracksByISRC("USPR37300012") // a recording of the song "Love's Theme" by the Love Unlimited Orchestra.
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	if albums[0].Name != "No!" {
-		t.Errorf("Album title is %s instead of No!", albums[0].Name)
+	if len(tracks) == 0 {
+		t.Fatal("Track length is 0, but should be... larger")
+	}
+}
+
+func TestGetTracksForArtist(t *testing.T) {
+	c := createCatalogClient(t)
+
+	tracks, err := c.GetTracksForArtist("r49021") // They Might Be Giants
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(tracks) == 0 {
+		t.Fatal("Track length is 0, but should be... larger")
 	}
 }
