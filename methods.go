@@ -23,12 +23,19 @@ import (
 	"strings"
 )
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Core
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO: These are all hard for me, since they can return all different Types, so skipping for now
 // Can we use the "type" prop on the results?
+//get
+//getObjectFromShortCode
+//getObjectFromUrl
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Catalog
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (c *Client) GetAlbumsByUPC(upc string) ([]Album, error) {
 	params := url.Values{
@@ -104,7 +111,9 @@ func (c *Client) GetTracksForArtist(artistKey string) ([]Track, error) {
 
 // TODO: search and searchSuggestions
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Collection
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (c *Client) AddToCollection(keys []string) (bool, error) {
 	params := url.Values{
@@ -224,7 +233,9 @@ func (c *Client) SetAvailableOffline(keys []string, offline bool) (bool, error) 
 	return c.getBoolResponse(body)
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Playlists
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (c *Client) AddToPlaylist(playlistKey string, trackKeys []string) (*Playlist, error) {
 	params := url.Values{
@@ -377,10 +388,153 @@ func (c *Client) SetPlaylistOrder(playlistKey string, trackKeys []string) (*Play
 	return c.getPlaylistResponse(body)
 }
 
-// Comments
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Social
-// Network
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func (c *Client) AddFriend(userKey string) (bool, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("addFriend", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) ApproveFollower(userKey string) (*User, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("approveFollower", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUserResponse(body)
+}
+
+func (c *Client) CurrentUser() (*User, error) {
+	params := url.Values{}
+	body, err := c.Call("currentUser", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUserResponse(body)
+}
+
+func (c *Client) FindUserEmail(email string) (*User, error) {
+	params := url.Values{
+		"email": []string{email},
+	}
+	body, err := c.Call("findUser", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUserResponse(body)
+}
+
+func (c *Client) FindUserVanityName(vanityName string) (*User, error) {
+	params := url.Values{
+		"vanityName": []string{vanityName},
+	}
+	body, err := c.Call("findUser", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUserResponse(body)
+}
+
+func (c *Client) HideFollower(userKey string) (*User, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("hideFollower", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUserResponse(body)
+}
+
+func (c *Client) RemoveFriend(userKey string) (bool, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("removeFriend", params)
+	if err != nil {
+		return false, err
+	}
+
+	return c.getBoolResponse(body)
+}
+
+func (c *Client) UnapproveFollower(userKey string) (*User, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("unapproveFollower", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUserResponse(body)
+}
+
+func (c *Client) UserFollowers(userKey string) ([]User, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("userFollowers", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUsersResponse(body)
+}
+
+func (c *Client) UserFollowing(userKey string) ([]User, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("userFollowing", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUsersResponse(body)
+}
+
+func (c *Client) UserHiddenFollowers() ([]User, error) {
+	params := url.Values{}
+	body, err := c.Call("userHiddenFollowers", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUsersResponse(body)
+}
+
+func (c *Client) UserPendingFollowers(userKey string) ([]User, error) {
+	params := url.Values{
+		"user": []string{userKey},
+	}
+	body, err := c.Call("userPendingFollowers", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getUsersResponse(body)
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Activity and Statistics
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (c *Client) GetActivityStream() ([]Album, error) {
 	params := url.Values{}
@@ -474,7 +628,9 @@ func (c *Client) GetTopChartsPlaylists() ([]Playlist, error) {
 	return c.getPlaylistsResponse(body)
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Playback
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (c *Client) GetPlaybackToken() (string, error) {
 	params := url.Values{}
@@ -486,7 +642,9 @@ func (c *Client) GetPlaybackToken() (string, error) {
 	return c.getStringResponse(body)
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private functions for parsing responses
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (c *Client) getPlaylistResponse(body []byte) (*Playlist, error) {
 	type Response struct {
@@ -702,6 +860,48 @@ func (c *Client) getCollectionArtistsResponse(body []byte) ([]CollectionArtist, 
 	type Response struct {
 		Status string
 		Result []CollectionArtist
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getUserResponse(body []byte) (*User, error) {
+	type Response struct {
+		Status string
+		Result *User
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) getUsersResponse(body []byte) ([]User, error) {
+	type Response struct {
+		Status string
+		Result []User
 	}
 
 	// parse into json
