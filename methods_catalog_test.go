@@ -115,7 +115,7 @@ func TestSearch(t *testing.T) {
 	}
 
 	if len(results) == 0 {
-		t.Fatal("Track length is 0, but should be... larger")
+		t.Fatal("Results length is 0, but should be... larger")
 	}
 }
 
@@ -128,6 +128,6 @@ func TestSearchSuggestions(t *testing.T) {
 	}
 
 	if len(results) == 0 {
-		t.Fatal("Track length is 0, but should be... larger")
+		t.Fatal("Results length is 0, but should be... larger")
 	}
 }
