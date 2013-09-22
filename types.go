@@ -47,7 +47,7 @@ type Artist struct {
 type Label struct {
 	Name     string // the name of the label
 	Key      string // the key of the label
-	Yype     string // the object type, always "l"
+	Type     string // the object type, always "l"
 	Url      string // the url of the label on teh Rdio web site
 	ShortUrl string // a short URL for the label page
 	HasRadio bool   // is a station available for the label

@@ -27,11 +27,96 @@ import (
 // Core
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: These are all hard for me, since they can return all different Types, so skipping for now
-// Can we use the "type" prop on the results?
-//get
-//getObjectFromShortCode
-//getObjectFromUrl
+// TODO: These are all difficult for me, since they can return all different Types
+// Can we use the "type" prop on the results and convert them in these methods?
+// Or should we just return them as generic interfaces and have callers convert them?
+
+func (c *Client) Get(keys []string) (map[string]interface{}, error) {
+	params := url.Values{
+		"keys": []string{strings.Join(keys, ",")},
+	}
+	body, err := c.Call("get", params)
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Status string
+		Result map[string]interface{}
+	}
+
+	// parse into json
+	var response Response
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) GetObjectFromShortCode(shortCode string) (interface{}, error) {
+	params := url.Values{
+		"short_code": []string{shortCode},
+	}
+	body, err := c.Call("getObjectFromShortCode", params)
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Status string
+		Result interface{}
+	}
+
+	// parse into json
+	var response Response
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) GetObjectFromUrl(urlPath string) (interface{}, error) {
+	params := url.Values{
+		"url": []string{urlPath},
+	}
+	body, err := c.Call("getObjectFromUrl", params)
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Status string
+		Result interface{}
+	}
+
+	// parse into json
+	var response Response
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Catalog
