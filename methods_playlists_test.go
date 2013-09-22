@@ -44,7 +44,7 @@ func TestAddToPlaylist(t *testing.T) {
 func TestCreatePlaylist(t *testing.T) {
 	c := createPlaylistClient(t)
 
-	_, err := c.CreatePlaylist("Test playlist", "This is a test playlist", []string{})
+	_, err := c.CreatePlaylist("", "", []string{})
 	if err == nil {
 		t.Fatal("Expected API error, got none")
 	}
