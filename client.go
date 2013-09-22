@@ -132,10 +132,8 @@ func (c *Client) Sign(signUrl string, params url.Values) string {
 		sorted.Add(k, params.Get(k))
 	}
 
-	//fmt.Println(sorted.Encode())
-
 	// Build the signature base string
-	signatureBaseString := []byte("POST&" + url.QueryEscape(signUrl) + "&" + url.QueryEscape(sorted.Encode()))
+	signatureBaseString := []byte("POST&" + url.QueryEscape(signUrl) + "&" + strings.Replace(url.QueryEscape(sorted.Encode()), "%2B", "%2520", -1))
 	//fmt.Println(string(signatureBaseString))
 
 	// Calculate HMAC-SHA1
