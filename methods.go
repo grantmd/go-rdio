@@ -10,7 +10,8 @@
 //
 // TODO: Some of these methods do not require auth. Do we care?
 // TODO: Consistent pagination args for those that do pagination
-// TODO: We don't support any of the optional args yet
+// TODO: We don't support any of the optional args yet - probably fix is a super-method that
+// supports all args, and then simpler methods that call the super-method with some defaults
 //
 
 package rdio
@@ -194,7 +195,64 @@ func (c *Client) GetTracksForArtist(artistKey string) ([]Track, error) {
 	return c.getTracksResponse(body)
 }
 
-// TODO: search and searchSuggestions
+func (c *Client) Search(query string, types []string) (map[string]interface{}, error) {
+	params := url.Values{
+		"query": []string{query},
+		"types": []string{strings.Join(types, ",")},
+	}
+	body, err := c.Call("search", params)
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Status string
+		Result map[string]interface{}
+	}
+
+	// parse into json
+	var response Response
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
+
+func (c *Client) SearchSuggestions(query string) (map[string]interface{}, error) {
+	params := url.Values{
+		"query": []string{query},
+	}
+	body, err := c.Call("searchSuggestions", params)
+	if err != nil {
+		return nil, err
+	}
+
+	type Response struct {
+		Status string
+		Result map[string]interface{}
+	}
+
+	// parse into json
+	var response Response
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result, nil
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Collection

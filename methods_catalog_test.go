@@ -105,3 +105,42 @@ func TestGetTracksForArtist(t *testing.T) {
 		t.Fatal("Track length is 0, but should be... larger")
 	}
 }
+
+func TestSearch(t *testing.T) {
+	c := createCatalogClient(t)
+
+	results, err := c.Search("They Might Be Giants", []string{"Artist"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(results) == 0 {
+		t.Fatal("Track length is 0, but should be... larger")
+	}
+}
+
+func TestSearchSuggestions(t *testing.T) {
+	c := createCatalogClient(t)
+
+	results, err := c.SearchSuggestions("They Might")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(results) == 0 {
+		t.Fatal("Track length is 0, but should be... larger")
+	}
+}
+
+/*
+=== RUN TestSearch
+method=search&oauth_consumer_key=t5c3whdekw8gtfhr54r45gnn&oauth_nonce=235379&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1379823362&oauth_token=2usw9wfe382y95pfcp5sne9385xahvu4b29bu3dhde5p7uae6qm9qmqrgz2eqpkp&oauth_version=1.0&query=They+Might+Be+Giants&types=Artist
+POST&http%3A%2F%2Fapi.rdio.com%2F1%2F&method%3Dsearch%26oauth_consumer_key%3Dt5c3whdekw8gtfhr54r45gnn%26oauth_nonce%3D235379%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1379823362%26oauth_token%3D2usw9wfe382y95pfcp5sne9385xahvu4b29bu3dhde5p7uae6qm9qmqrgz2eqpkp%26oauth_version%3D1.0%26query%3DThey%2BMight%2BBe%2BGiants%26types%3DArtist
+--- FAIL: TestSearch (0.06 seconds)
+	methods_catalog_test.go:114: 401: Invalid Signature
+=== RUN TestSearchSuggestions
+method=searchSuggestions&oauth_consumer_key=t5c3whdekw8gtfhr54r45gnn&oauth_nonce=770742&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1379823362&oauth_token=2usw9wfe382y95pfcp5sne9385xahvu4b29bu3dhde5p7uae6qm9qmqrgz2eqpkp&oauth_version=1.0&query=They+Might
+POST&http%3A%2F%2Fapi.rdio.com%2F1%2F&method%3DsearchSuggestions%26oauth_consumer_key%3Dt5c3whdekw8gtfhr54r45gnn%26oauth_nonce%3D770742%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1379823362%26oauth_token%3D2usw9wfe382y95pfcp5sne9385xahvu4b29bu3dhde5p7uae6qm9qmqrgz2eqpkp%26oauth_version%3D1.0%26query%3DThey%2BMight
+--- FAIL: TestSearchSuggestions (0.04 seconds)
+	methods_catalog_test.go:127: 401: Invalid Signature
+*/
