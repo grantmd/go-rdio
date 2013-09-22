@@ -225,7 +225,7 @@ func (c *Client) Search(query string, types []string) (map[string]interface{}, e
 	return response.Result, nil
 }
 
-func (c *Client) SearchSuggestions(query string) (map[string]interface{}, error) {
+func (c *Client) SearchSuggestions(query string) ([]interface{}, error) {
 	params := url.Values{
 		"query": []string{query},
 	}
@@ -236,7 +236,7 @@ func (c *Client) SearchSuggestions(query string) (map[string]interface{}, error)
 
 	type Response struct {
 		Status string
-		Result map[string]interface{}
+		Result []interface{}
 	}
 
 	// parse into json
