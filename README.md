@@ -16,7 +16,7 @@ Usage
 
 * Install the library:
 
-        go get github.com/mrjones/oauth
+        go get github.com/grantmd/go-rdio
 
 * Include it in your project:
 
