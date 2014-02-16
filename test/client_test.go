@@ -1,22 +1,23 @@
-package rdio
+package testrdio
 
 import (
 	"net/url"
 	"os"
 	"testing"
+    "github.com/grantmd/go-rdio"
 )
 
 func TestClientNoAuth(t *testing.T) {
-	c := &Client{}
+	c := &rdio.Client{}
 	_, err := c.StartAuth()
 
-	if err != ErrDeveloperInactive {
+	if err != rdio.ErrDeveloperInactive {
 		t.Errorf("Expected 403, got %s\n", err)
 	}
 }
 
 func TestClientAuth(t *testing.T) {
-	c := &Client{
+	c := &rdio.Client{
 		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
 		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
 	}
@@ -52,28 +53,7 @@ func TestClientAuth(t *testing.T) {
 }
 
 func TestClientCall(t *testing.T) {
-	c := &Client{
-		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
-		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
-		Token:          os.Getenv("RDIO_API_TOKEN"),
-		TokenSecret:    os.Getenv("RDIO_API_TOKEN_SECRET"),
-	}
-
-	if c.ConsumerKey == "" {
-		t.Error("Rdio api key is missing (should be in the RDIO_API_KEY environment variable)")
-	}
-
-	if c.ConsumerSecret == "" {
-		t.Error("Rdio api secret is missing (should be in the RDIO_API_SECRET environment variable)")
-	}
-
-	if c.Token == "" {
-		t.Error("Rdio api user token is missing (should be in the RDIO_API_TOKEN environment variable)")
-	}
-
-	if c.TokenSecret == "" {
-		t.Error("Rdio api user secret is missing (should be in the RDIO_API_TOKEN_SECRET environment variable)")
-	}
+	c := createClient(t)
 
 	params := url.Values{}
 	body, err := c.Call("getPlaybackToken", params)

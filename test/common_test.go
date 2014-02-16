@@ -1,12 +1,13 @@
-package rdio
+package testrdio
 
 import (
 	"os"
 	"testing"
+    "github.com/grantmd/go-rdio"
 )
 
-func createPlaybackClient(t *testing.T) (c *Client) {
-	c = &Client{
+func createClient(t *testing.T) (c *rdio.Client) {
+	c = &rdio.Client{
 		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
 		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
 		Token:          os.Getenv("RDIO_API_TOKEN"),
@@ -30,17 +31,4 @@ func createPlaybackClient(t *testing.T) (c *Client) {
 	}
 
 	return c
-}
-
-func TestGetPlaybackToken(t *testing.T) {
-	c := createPlaybackClient(t)
-
-	token, err := c.GetPlaybackToken()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if token == "" {
-		t.Error("Token is empty")
-	}
 }

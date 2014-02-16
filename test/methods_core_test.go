@@ -1,39 +1,12 @@
-package rdio
+package testrdio
 
 import (
-	"os"
 	"testing"
+    "fmt"
 )
 
-func createCoreClient(t *testing.T) (c *Client) {
-	c = &Client{
-		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
-		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
-		Token:          os.Getenv("RDIO_API_TOKEN"),
-		TokenSecret:    os.Getenv("RDIO_API_TOKEN_SECRET"),
-	}
-
-	if c.ConsumerKey == "" {
-		t.Error("Rdio api key is missing (should be in the RDIO_API_KEY environment variable)")
-	}
-
-	if c.ConsumerSecret == "" {
-		t.Error("Rdio api secret is missing (should be in the RDIO_API_SECRET environment variable)")
-	}
-
-	if c.Token == "" {
-		t.Error("Rdio api user token is missing (should be in the RDIO_API_TOKEN environment variable)")
-	}
-
-	if c.TokenSecret == "" {
-		t.Error("Rdio api user secret is missing (should be in the RDIO_API_TOKEN_SECRET environment variable)")
-	}
-
-	return c
-}
-
 func TestGet(t *testing.T) {
-	c := createCoreClient(t)
+	c := createClient(t)
 
 	objects, err := c.Get([]string{})
 	if err != nil {
@@ -64,7 +37,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetObjectFromShortCode(t *testing.T) {
-	c := createCoreClient(t)
+	c := createClient(t)
 
 	object, err := c.GetObjectFromShortCode("")
 	if err == nil {
@@ -86,7 +59,8 @@ func TestGetObjectFromShortCode(t *testing.T) {
 }
 
 func TestGetObjectFromUrl(t *testing.T) {
-	c := createCoreClient(t)
+		fmt.Print("running!")
+	c := createClient(t)
 
 	object, err := c.GetObjectFromUrl("")
 	if err == nil {
@@ -101,6 +75,8 @@ func TestGetObjectFromUrl(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+		fmt.Print(object)
 
 	if object == nil {
 		t.Errorf("Expected object, got %s", object)

@@ -1,43 +1,15 @@
-package rdio
+package testrdio
 
 //
 // These are all hard to test, because they operate on the user's collection. So, let's do the minimum for now and hope for the best!
 //
 
 import (
-	"os"
 	"testing"
 )
 
-func createCollectionClient(t *testing.T) (c *Client) {
-	c = &Client{
-		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
-		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
-		Token:          os.Getenv("RDIO_API_TOKEN"),
-		TokenSecret:    os.Getenv("RDIO_API_TOKEN_SECRET"),
-	}
-
-	if c.ConsumerKey == "" {
-		t.Error("Rdio api key is missing (should be in the RDIO_API_KEY environment variable)")
-	}
-
-	if c.ConsumerSecret == "" {
-		t.Error("Rdio api secret is missing (should be in the RDIO_API_SECRET environment variable)")
-	}
-
-	if c.Token == "" {
-		t.Error("Rdio api user token is missing (should be in the RDIO_API_TOKEN environment variable)")
-	}
-
-	if c.TokenSecret == "" {
-		t.Error("Rdio api user secret is missing (should be in the RDIO_API_TOKEN_SECRET environment variable)")
-	}
-
-	return c
-}
-
 func TestAddToCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.AddToCollection([]string{""})
 	if err != nil {
@@ -46,7 +18,7 @@ func TestAddToCollection(t *testing.T) {
 }
 
 func TestGetAlbumsForArtistInCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.GetAlbumsForArtistInCollection("r49021") // They Might Be Giants
 	if err != nil {
@@ -55,7 +27,7 @@ func TestGetAlbumsForArtistInCollection(t *testing.T) {
 }
 
 func TestGetAlbumsInCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.GetAlbumsInCollection()
 	if err != nil {
@@ -64,7 +36,7 @@ func TestGetAlbumsInCollection(t *testing.T) {
 }
 
 func TestGetArtistsInCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.GetArtistsInCollection()
 	if err != nil {
@@ -73,7 +45,7 @@ func TestGetArtistsInCollection(t *testing.T) {
 }
 
 func TestGetOfflineTracks(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.GetOfflineTracks()
 	if err != nil {
@@ -82,7 +54,7 @@ func TestGetOfflineTracks(t *testing.T) {
 }
 
 func TestGetTracksForAlbumInCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.GetTracksForAlbumInCollection("a101334") // Flood, They Might Be Giants
 	if err != nil {
@@ -91,7 +63,7 @@ func TestGetTracksForAlbumInCollection(t *testing.T) {
 }
 
 func TestGetTracksForArtistInCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.GetTracksForArtistInCollection("r49021") // They Might Be Giants
 	if err != nil {
@@ -100,7 +72,7 @@ func TestGetTracksForArtistInCollection(t *testing.T) {
 }
 
 func TestGetTracksInCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.GetTracksInCollection()
 	if err != nil {
@@ -109,7 +81,7 @@ func TestGetTracksInCollection(t *testing.T) {
 }
 
 func TestRemoveFromCollection(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.RemoveFromCollection([]string{""})
 	if err != nil {
@@ -118,7 +90,7 @@ func TestRemoveFromCollection(t *testing.T) {
 }
 
 func TestSetAvailableOffline(t *testing.T) {
-	c := createCollectionClient(t)
+	c := createClient(t)
 
 	_, err := c.SetAvailableOffline([]string{""}, false)
 	if err != nil {

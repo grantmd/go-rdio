@@ -1,39 +1,11 @@
-package rdio
+package testrdio
 
 import (
-	"os"
 	"testing"
 )
 
-func createPlaylistClient(t *testing.T) (c *Client) {
-	c = &Client{
-		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
-		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
-		Token:          os.Getenv("RDIO_API_TOKEN"),
-		TokenSecret:    os.Getenv("RDIO_API_TOKEN_SECRET"),
-	}
-
-	if c.ConsumerKey == "" {
-		t.Error("Rdio api key is missing (should be in the RDIO_API_KEY environment variable)")
-	}
-
-	if c.ConsumerSecret == "" {
-		t.Error("Rdio api secret is missing (should be in the RDIO_API_SECRET environment variable)")
-	}
-
-	if c.Token == "" {
-		t.Error("Rdio api user token is missing (should be in the RDIO_API_TOKEN environment variable)")
-	}
-
-	if c.TokenSecret == "" {
-		t.Error("Rdio api user secret is missing (should be in the RDIO_API_TOKEN_SECRET environment variable)")
-	}
-
-	return c
-}
-
 func TestAddToPlaylist(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.AddToPlaylist("", []string{})
 	if err == nil {
@@ -42,7 +14,7 @@ func TestAddToPlaylist(t *testing.T) {
 }
 
 func TestCreatePlaylist(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.CreatePlaylist("", "", []string{})
 	if err == nil {
@@ -51,7 +23,7 @@ func TestCreatePlaylist(t *testing.T) {
 }
 
 func TestDeletePlaylist(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.DeletePlaylist("")
 	if err == nil {
@@ -60,7 +32,7 @@ func TestDeletePlaylist(t *testing.T) {
 }
 
 func TestGetPlaylists(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.GetPlaylists()
 	if err != nil {
@@ -69,7 +41,7 @@ func TestGetPlaylists(t *testing.T) {
 }
 
 func TestGetUserPlaylists(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.GetUserPlaylists("s3318") // Me!
 	if err != nil {
@@ -78,7 +50,7 @@ func TestGetUserPlaylists(t *testing.T) {
 }
 
 func TestRemoveFromPlaylist(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.RemoveFromPlaylist("", 0, 1, []string{})
 	if err == nil {
@@ -87,7 +59,7 @@ func TestRemoveFromPlaylist(t *testing.T) {
 }
 
 func TestSetPlaylistCollaborating(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.SetPlaylistCollaborating("", false)
 	if err == nil {
@@ -96,7 +68,7 @@ func TestSetPlaylistCollaborating(t *testing.T) {
 }
 
 func TestSetPlaylistCollaborationMode(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.SetPlaylistCollaborationMode("", 1)
 	if err == nil {
@@ -105,7 +77,7 @@ func TestSetPlaylistCollaborationMode(t *testing.T) {
 }
 
 func TestSetPlaylistFields(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.SetPlaylistFields("", "", "")
 	if err == nil {
@@ -114,7 +86,7 @@ func TestSetPlaylistFields(t *testing.T) {
 }
 
 func TestSetPlaylistOrder(t *testing.T) {
-	c := createPlaylistClient(t)
+	c := createClient(t)
 
 	_, err := c.SetPlaylistOrder("", []string{})
 	if err == nil {
