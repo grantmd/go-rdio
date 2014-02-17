@@ -1,39 +1,11 @@
-package rdio
+package testrdio
 
 import (
-	"os"
 	"testing"
 )
 
-func createCatalogClient(t *testing.T) (c *Client) {
-	c = &Client{
-		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
-		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
-		Token:          os.Getenv("RDIO_API_TOKEN"),
-		TokenSecret:    os.Getenv("RDIO_API_TOKEN_SECRET"),
-	}
-
-	if c.ConsumerKey == "" {
-		t.Error("Rdio api key is missing (should be in the RDIO_API_KEY environment variable)")
-	}
-
-	if c.ConsumerSecret == "" {
-		t.Error("Rdio api secret is missing (should be in the RDIO_API_SECRET environment variable)")
-	}
-
-	if c.Token == "" {
-		t.Error("Rdio api user token is missing (should be in the RDIO_API_TOKEN environment variable)")
-	}
-
-	if c.TokenSecret == "" {
-		t.Error("Rdio api user secret is missing (should be in the RDIO_API_TOKEN_SECRET environment variable)")
-	}
-
-	return c
-}
-
 func TestGetAlbumsByUPC(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	albums, err := c.GetAlbumsByUPC("011661811324")
 	if err != nil {
@@ -50,7 +22,7 @@ func TestGetAlbumsByUPC(t *testing.T) {
 }
 
 func TestGetAlbumsForArtist(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	albums, err := c.GetAlbumsForArtist("r49021") // They Might Be Giants
 	if err != nil {
@@ -63,7 +35,7 @@ func TestGetAlbumsForArtist(t *testing.T) {
 }
 
 func TestTestGetAlbumsForLabel(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	_, err := c.GetAlbumsForLabel("l755") // Rhino
 	if err != nil {
@@ -72,7 +44,7 @@ func TestTestGetAlbumsForLabel(t *testing.T) {
 }
 
 func TestGetArtistsForLabel(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	_, err := c.GetArtistsForLabel("l755") // Rhino
 	if err != nil {
@@ -81,7 +53,7 @@ func TestGetArtistsForLabel(t *testing.T) {
 }
 
 func TestGetTracksByISRC(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	tracks, err := c.GetTracksByISRC("USPR37300012") // a recording of the song "Love's Theme" by the Love Unlimited Orchestra.
 	if err != nil {
@@ -94,7 +66,7 @@ func TestGetTracksByISRC(t *testing.T) {
 }
 
 func TestGetTracksForArtist(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	tracks, err := c.GetTracksForArtist("r49021") // They Might Be Giants
 	if err != nil {
@@ -107,7 +79,7 @@ func TestGetTracksForArtist(t *testing.T) {
 }
 
 func TestSearch(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	results, err := c.Search("They Might Be Giants", []string{"Artist"})
 	if err != nil {
@@ -120,7 +92,7 @@ func TestSearch(t *testing.T) {
 }
 
 func TestSearchSuggestions(t *testing.T) {
-	c := createCatalogClient(t)
+	c := createClient(t)
 
 	results, err := c.SearchSuggestions("They Might")
 	if err != nil {

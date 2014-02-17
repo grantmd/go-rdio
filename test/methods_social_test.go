@@ -1,39 +1,11 @@
-package rdio
+package testrdio
 
 import (
-	"os"
 	"testing"
 )
 
-func createSocialClient(t *testing.T) (c *Client) {
-	c = &Client{
-		ConsumerKey:    os.Getenv("RDIO_API_KEY"),
-		ConsumerSecret: os.Getenv("RDIO_API_SECRET"),
-		Token:          os.Getenv("RDIO_API_TOKEN"),
-		TokenSecret:    os.Getenv("RDIO_API_TOKEN_SECRET"),
-	}
-
-	if c.ConsumerKey == "" {
-		t.Error("Rdio api key is missing (should be in the RDIO_API_KEY environment variable)")
-	}
-
-	if c.ConsumerSecret == "" {
-		t.Error("Rdio api secret is missing (should be in the RDIO_API_SECRET environment variable)")
-	}
-
-	if c.Token == "" {
-		t.Error("Rdio api user token is missing (should be in the RDIO_API_TOKEN environment variable)")
-	}
-
-	if c.TokenSecret == "" {
-		t.Error("Rdio api user secret is missing (should be in the RDIO_API_TOKEN_SECRET environment variable)")
-	}
-
-	return c
-}
-
 func TestAddFriend(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.AddFriend("")
 	if err == nil {
@@ -42,7 +14,7 @@ func TestAddFriend(t *testing.T) {
 }
 
 func TestApproveFollower(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.ApproveFollower("")
 	if err == nil {
@@ -51,7 +23,7 @@ func TestApproveFollower(t *testing.T) {
 }
 
 func TestCurrentUser(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	user, err := c.CurrentUser()
 	if err != nil {
@@ -67,7 +39,7 @@ func TestCurrentUser(t *testing.T) {
 }
 
 func TestFindUserEmail(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	user, err := c.FindUserEmail("myles@mylesgrant.com")
 	if err != nil {
@@ -83,7 +55,7 @@ func TestFindUserEmail(t *testing.T) {
 }
 
 func TestFindUserVanityName(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	user, err := c.FindUserVanityName("myles")
 	if err != nil {
@@ -99,7 +71,7 @@ func TestFindUserVanityName(t *testing.T) {
 }
 
 func TestHideFollower(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.HideFollower("")
 	if err == nil {
@@ -108,7 +80,7 @@ func TestHideFollower(t *testing.T) {
 }
 
 func TestRemoveFriend(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.RemoveFriend("")
 	if err == nil {
@@ -117,7 +89,7 @@ func TestRemoveFriend(t *testing.T) {
 }
 
 func TestUnapproveFollower(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.UnapproveFollower("")
 	if err == nil {
@@ -126,7 +98,7 @@ func TestUnapproveFollower(t *testing.T) {
 }
 
 func TestUserFollowers(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.UserFollowers("")
 	if err == nil {
@@ -144,7 +116,7 @@ func TestUserFollowers(t *testing.T) {
 }
 
 func TestUserFollowing(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.UserFollowing("")
 	if err == nil {
@@ -162,7 +134,7 @@ func TestUserFollowing(t *testing.T) {
 }
 
 func TestUserHiddenFollowers(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.UserHiddenFollowers()
 	if err != nil {
@@ -171,7 +143,7 @@ func TestUserHiddenFollowers(t *testing.T) {
 }
 
 func TestUserPendingFollowers(t *testing.T) {
-	c := createSocialClient(t)
+	c := createClient(t)
 
 	_, err := c.UserPendingFollowers()
 	if err != nil {
