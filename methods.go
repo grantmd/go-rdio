@@ -784,6 +784,24 @@ func (c *Client) GetPlaybackToken() (string, error) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+// History
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+func (c *Client) GetHistoryForUser(userKey string, start int, count int) ([]HistorySource, error) {
+	params := url.Values{
+		"user":  []string{userKey},
+		"start": []string{strconv.Itoa(start)},
+		"count": []string{strconv.Itoa(count)},
+	}
+	body, err := c.Call("getHistoryForUser", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.getHistoryResponse(body)
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private functions for parsing responses
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1058,4 +1076,28 @@ func (c *Client) getUsersResponse(body []byte) ([]User, error) {
 	}
 
 	return response.Result, nil
+}
+
+func (c *Client) getHistoryResponse(body []byte) ([]HistorySource, error) {
+	type Response struct {
+		Status string
+		Result struct {
+			LastTransaction int `json:"last_transaction"`
+			Sources         []HistorySource
+		}
+	}
+
+	// parse into json
+	var response Response
+	err := json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check that we got an OK
+	if response.Status != "ok" {
+		return nil, errors.New("Got non-ok response from the Rdio API")
+	}
+
+	return response.Result.Sources, nil
 }
