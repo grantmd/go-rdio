@@ -262,3 +262,16 @@ type UserPlaylists struct {
 	Collab     []Playlist
 	Subscribed []Playlist
 }
+
+type HistoryTrack struct {
+	Time  string
+	Track Track
+}
+
+type HistorySource struct {
+	ExtraTrackTimes []string
+	ExtraTrackKeys  []string
+	Source          Album
+	Tracks          []HistoryTrack
+	Time            string
+}

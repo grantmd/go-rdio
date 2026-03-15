@@ -103,3 +103,21 @@ func TestSearchSuggestions(t *testing.T) {
 		t.Fatal("Results length is 0, but should be... larger")
 	}
 }
+
+func TestGetHistoryForUser(t *testing.T) {
+	c := createClient(t)
+
+	user, err := c.CurrentUser()
+	if err != nil {
+		t.Fatal("Could not determine current user")
+	}
+
+	sources, err := c.GetHistoryForUser(user.Key, 0, 10)
+	if err != nil {
+		t.Fatal("Could not get history sources list")
+	}
+
+	if len(sources) == 0 {
+		t.Fatal("History length probably shouldn't be 0")
+	}
+}
